@@ -1,0 +1,36 @@
+##-----------------------------------------##
+/run/verbose 1
+/event/verbose 0
+/tracking/verbose 0
+##-----------------------------------------##
+/target/length 0.007 m
+/target/width 4.0 mm
+/target/height 23.0 mm
+/output/filename ../output/output.root
+/stack/killsecondaries 1
+/beam/deltaP 0.0
+/beam/P 100.0 keV
+/beam/pName e+
+/beam/PdirX 0.0
+/beam/PdirY 0.0
+/beam/PdirZ 1.0
+
+/run/initialize
+##-----------------------------------------##
+/vis/open HepRepFile
+#/vis/open OGL #700x700-0+0
+
+/vis/drawVolume
+/vis/viewer/set/viewpointThetaPhi 90. 0.
+/vis/scene/add/trajectories
+/vis/scene/endOfEventAction accumulate 100
+/vis/scene/add/trajectories rich smooth
+/vis/modeling/trajectories/create/drawByCharge
+/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 5
+/vis/modeling/trajectories/drawByCharge-0/default/setDrawAuxPts true
+/vis/modeling/trajectories/drawByCharge-0/default/setAuxPtsSize 5
+/vis/modeling/trajectories/drawByCharge-0/default/setTimeSliceInterval 0.1 ns
+##-----------------------------------------##
+/run/beamOn 30
+##-----------------------------------------##
