@@ -3,13 +3,13 @@
 /event/verbose 0
 /tracking/verbose 0
 ##-----------------------------------------##
-/target/length 0.007 m
-/target/width 4.0 mm
-/target/height 23.0 mm
+/target/length 10.0 mm
+/target/width 50.0 mm
+/target/height 50.0 mm
 /output/filename ../output/output.root
 /stack/killsecondaries 1
-/beam/deltaP 0.0
-/beam/P 100.0 keV
+/beam/deltaP 0.01
+/beam/P 4.0 GeV
 /beam/pName e+
 /beam/PdirX 0.0
 /beam/PdirY 0.0

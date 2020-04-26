@@ -43,10 +43,11 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
     runAction->_PDG = particleDef->GetPDGEncoding();
     runAction->_Q = particleDef->GetPDGCharge();
-    runAction->_Mass = particleDef->GetPDGMass()/GeV;
+    G4double mass = particleDef->GetPDGMass();
+    G4double Mom = _P*(1.0 + _deltaP);
+    G4double Ekin   = std::sqrt(Mom*Mom + mass*mass) - mass;
 
-    _P = _P*(1.0 + _deltaP);
-    G4double Ekin   = std::sqrt(_P*_P + runAction->_Mass*runAction->_Mass) - runAction->_Mass;
+    runAction->_Mass = mass/GeV;
 
     fParticleGun->SetParticleDefinition(particleDef);
     fParticleGun->SetParticleEnergy(Ekin);
