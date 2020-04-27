@@ -25,9 +25,9 @@ parType="e+";
 #mom=7.007290000; # [GeV/c]
 #parType="e-";
 
-for length in $(seq 0.2 0.2 30.0)
+for length in $(seq 1.0 1.0 30.0)
 do
-    for deltaP in $(seq -0.1 0.001 0.1)
+    for deltaP in $(seq -0.01 0.001 0.01)
     do
         echo "##-----------------------------------------##"                >  ./macFiles/run_${threadID}_${runID}.mac;
         echo "/run/verbose 1"                                               >> ./macFiles/run_${threadID}_${runID}.mac;

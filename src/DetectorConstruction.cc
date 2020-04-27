@@ -53,9 +53,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                                   _target_height/2,
                                   _target_length/2);
 
-    runAction->_targetL = target_box->GetZHalfLength()*2.0;
-    runAction->_targetW = target_box->GetXHalfLength()*2.0;
-    runAction->_targetH = target_box->GetYHalfLength()*2.0;
+    runAction->_targetL = target_box->GetZHalfLength()*2.0/m;
+    runAction->_targetW = target_box->GetXHalfLength()*2.0/m;
+    runAction->_targetH = target_box->GetYHalfLength()*2.0/m;
 
     G4LogicalVolume* target_log = new G4LogicalVolume(target_box,TUNGSTEN,"target_box");
     new G4PVPlacement(0,G4ThreeVector(Constants::target_pos_x,

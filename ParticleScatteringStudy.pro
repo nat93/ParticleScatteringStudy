@@ -12,6 +12,8 @@ LIBS += -L/Users/andrii/geant4.10/geant4-install/lib -lG4analysis -lG4digits_hit
 LIBS += -L/Users/andrii/geant4.10/clhep-install/lib -lCLHEP -lCLHEP-2.4.1.3 -lCLHEP-Cast-2.4.1.3 -lCLHEP-Evaluator-2.4.1.3 -lCLHEP-Exceptions-2.4.1.3
 
 SOURCES += \
+    ana/AnalysisClass.cc \
+    ana/ana.cc \
     main.cc \
     src/SteppingAction.cc \
     src/StackingMessenger.cc \
@@ -27,12 +29,14 @@ SOURCES += \
 DISTFILES += \
     CMakeLists.txt \
     README.md \
+    output/mergeFiles.bash \
     run.mac \
     runScreen.bash \
     vis.mac \
     runAll.bash
 
 HEADERS += \
+    ana/AnalysisClass.hh \
     include/*.hh \
 
 
