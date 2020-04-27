@@ -3,9 +3,9 @@
 /event/verbose 0
 /tracking/verbose 0
 ##-----------------------------------------##
-/target/length 10.0 mm
-/target/width 50.0 mm
-/target/height 50.0 mm
+/target/length 25.0 mm
+/target/width 80.0 mm
+/target/height 80.0 mm
 /output/filename ../output/output.root
 /stack/killsecondaries 1
 /beam/deltaP 0.01

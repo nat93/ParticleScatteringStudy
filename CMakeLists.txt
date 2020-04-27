@@ -68,6 +68,7 @@ set(exe_SCRIPTS
   run.mac
   vis.mac
   runAll.bash
+  runScreen.bash
   )
 
 foreach(_script ${exe_SCRIPTS})

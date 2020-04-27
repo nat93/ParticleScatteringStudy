@@ -28,6 +28,7 @@ DISTFILES += \
     CMakeLists.txt \
     README.md \
     run.mac \
+    runScreen.bash \
     vis.mac \
     runAll.bash
 
