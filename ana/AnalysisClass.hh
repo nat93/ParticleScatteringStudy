@@ -11,6 +11,8 @@
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
+#include <TH1D.h>
+#include <TGraphErrors.h>
 
 // Header file for the classes stored in the TTree if any.
 
@@ -33,6 +35,7 @@ public:
 
    TString GetInputFileName(){return _input_filename;}
    TString GetOutputFileName(){return _output_filename;}
+   void GetProbability(TH1D* h0, TH1D* h1, TGraphErrors* gr);
 
 private:
     TString _input_filename;

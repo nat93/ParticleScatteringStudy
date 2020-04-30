@@ -4,7 +4,17 @@
 #include "G4RunManager.hh"
 
 EventAction::EventAction(RunAction* runAct) : runAction(runAct)
+{}
+
+EventAction::~EventAction()
+{}
+
+void EventAction::BeginOfEventAction(const G4Event* event)
 {
+    G4int eventID = event->GetEventID();
+
+    runAction->_Event_ID = eventID;
+
     runAction->_X0      = -999.0;
     runAction->_Y0      = -999.0;
     runAction->_Z0      = -999.0;
@@ -22,18 +32,8 @@ EventAction::EventAction(RunAction* runAct) : runAction(runAct)
     runAction->_Mom_Z1  = -999.0;
     runAction->_Ekin1   = -999.0;
     runAction->_Det1    = 0;
-}
 
-EventAction::~EventAction()
-{}
-
-void EventAction::BeginOfEventAction(const G4Event* event)
-{
-    G4int eventID = event->GetEventID();
-
-    runAction->_Event_ID = eventID;
-
-    if(eventID%1000 == 0)
+    if(eventID%10000 == 0)
     {
         printf("\r--> BeginOfEvent: %12d",eventID);
         fflush(stdout);

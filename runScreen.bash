@@ -37,3 +37,4 @@ echo ""
 echo "Enjoy your time. I will do everything automatically. Just don't forget about me :)";
 echo ""
 
+# ls -lrt output_*.root | awk '{ print $9 }' > mergeFiles.bash

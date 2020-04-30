@@ -37,7 +37,7 @@ int main(int argc, char** argv)
     }
 
     // Optionally: choose a different Random engine...
-    G4Random::setTheEngine(new CLHEP::MTwistEngine);
+//    G4Random::setTheEngine(new CLHEP::MTwistEngine);
     G4long seed = time(NULL);
     G4Random::setTheSeed(seed);
 

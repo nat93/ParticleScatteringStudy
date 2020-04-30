@@ -3,6 +3,7 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <TVector3.h>
+#include <TF1.h>
 
 #include <ctime>
 #include <iostream>
@@ -129,20 +130,65 @@ void AnalysisClass::Loop()
     cout<<"--> nEntries = "<<nEntries<<endl;
 
     TFile *f = new TFile(_output_filename.Data(),"RECREATE");
-    TH1D* h0 = new TH1D("h0","D0 vs target length",400,0,40);
-    TH1D* h1 = new TH1D("h1","D1 vs target length",400,0,40);
-    TH1D* h2 = new TH1D("h2","Scattering probability vs target length",400,0,40);
-    TH1D* h3 = new TH1D("h3","#theta_{Det0} vs target length",1000,-TMath::Pi(),TMath::Pi());
-    TH1D* h4 = new TH1D("h4","#theta_{Det1} vs target length",1000,-TMath::Pi(),TMath::Pi());
-    TH1D* h5 = new TH1D("h5","#theta_{Scat.} vs target length",100,0,TMath::PiOver2());
-    TH2D* h6 = new TH2D("h6","#theta_{Scat.} vs target length",400,0,40,100,0,TMath::PiOver2());
-    TH1D* h7 = new TH1D("h7","E_{kin,Det0} vs target length",10000,0,10);
-    TH1D* h8 = new TH1D("h8","E_{kin,Det1} vs target length",10000,0,10);
-    TH1D* h9 = new TH1D("h9","#DeltaE_{kin} vs target length",10000,-10,10);
-    TH2D* h10 = new TH2D("h10","#DeltaE_{kin} vs target length",400,0,40,1000,-10,10);
+    TH1D* h0 = new TH1D("h0","D0 vs target length",400,0,40e-3);
+    TH1D* h1 = new TH1D("h1","D1 vs target length",400,0,40e-3);
+    TGraphErrors* gr2 = new TGraphErrors(); gr2->SetName("gr2");
+    TH1D* h3 = new TH1D("h3","#theta_{Det0} vs target length",1000000,-TMath::Pi(),TMath::Pi());
+    TH1D* h4 = new TH1D("h4","#theta_{Det1} vs target length",1000000,-TMath::Pi(),TMath::Pi());
+    TH1D* h5 = new TH1D("h5","#theta_{Scat.} vs target length",1000000,0,TMath::PiOver2());
+    TH2D* h6 = new TH2D("h6","#theta_{Scat.} vs target length",400,0,40e-3,10000,0,TMath::PiOver2());
+    TH1D* h7 = new TH1D("h7","E_{kin,Det0} vs target length",1000000,0,10);
+    TH1D* h8 = new TH1D("h8","E_{kin,Det1} vs target length",1000000,0,10);
+    TH1D* h9 = new TH1D("h9","#DeltaE_{kin} vs target length",1000000,-10,10);
+    TH2D* h10 = new TH2D("h10","#DeltaE_{kin} vs target length",400,0,40e-3,10000,-10,10);
 
     TVector3 particleMom0;
     TVector3 particleMom1;
+
+    const Int_t nP = 41;
+    Double_t Pmin[nP];
+    Double_t Pmax[nP];
+    TH1D* hh0[nP];
+    TH1D* hh1[nP];
+    TH2D* hh6[nP];
+    TGraphErrors* grProb[nP];
+    TGraphErrors* grTheta[nP];
+
+    fChain->GetEntry(0);
+    static Double_t nominalMom = (PDG > 0)? /*e-*/7.00729 : /*e+*/4.00000; // [GeV/c]
+
+    for(Int_t i = 0; i < nP; i++)
+    {
+        Double_t deltaP = -0.02 + i*0.001;
+        Pmin[i] = nominalMom*(1.0 + deltaP - 0.001/2.0);
+        Pmax[i] = nominalMom*(1.0 + deltaP + 0.001/2.0);
+
+        TString grTitle, grName;
+
+        grTitle.Form("P = [%.3f | %.3f] GeV/c",Pmin[i],Pmax[i]);
+
+        grName.Form("grProb_%d",i);
+        grProb[i] = new TGraphErrors();
+        grProb[i]->SetName(grName.Data());
+        grProb[i]->SetTitle(grTitle.Data());
+
+        grName.Form("grTheta_%d",i);
+        grTheta[i] = new TGraphErrors();
+        grTheta[i]->SetName(grName.Data());
+        grTheta[i]->SetTitle(grTitle.Data());
+
+        grName.Form("hh0_%d",i);
+        grTitle.Form("D0: P = [%.3f | %.3f] GeV/c",Pmin[i],Pmax[i]);
+        hh0[i] = new TH1D(grName.Data(),grTitle.Data(),400,0,40e-3);
+
+        grName.Form("hh1_%d",i);
+        grTitle.Form("D1: P = [%.3f | %.3f] GeV/c",Pmin[i],Pmax[i]);
+        hh1[i] = new TH1D(grName.Data(),grTitle.Data(),400,0,40e-3);
+
+        grName.Form("hh6_%d",i);
+        grTitle.Form("#theta_{Scat.}: P = [%.3f | %.3f] GeV/c",Pmin[i],Pmax[i]);
+        hh6[i] = new TH2D(grName.Data(),grTitle.Data(),400,0,40e-3,10000,0,TMath::PiOver2());
+    }
 
     cout<<endl;
     for (Long64_t jentry = 0; jentry < nEntries; jentry++)
@@ -163,6 +209,15 @@ void AnalysisClass::Loop()
             h0->Fill(targetL);
             h3->Fill(particleMom0.Theta());
             h7->Fill(Ekin0);
+
+            for(Int_t i = 0; i < nP; i++)
+            {
+                if(particleMom0.Mag() < Pmax[i] && particleMom0.Mag() > Pmin[i])
+                {
+                    hh0[i]->Fill(targetL);
+                }
+            }
+
             if(Det1 == 1)
             {
                 h1->Fill(targetL);
@@ -172,16 +227,33 @@ void AnalysisClass::Loop()
                 h8->Fill(Ekin1);
                 h9->Fill(Ekin0-Ekin1);
                 h10->Fill(targetL,Ekin0-Ekin1);
+
+                for(Int_t i = 0; i < nP; i++)
+                {
+                    if(particleMom0.Mag() < Pmax[i] && particleMom0.Mag() > Pmin[i])
+                    {
+                        hh1[i]->Fill(targetL);
+                        hh6[i]->Fill(targetL,particleMom1.Theta()-particleMom0.Theta());
+                    }
+                }
             }
         }
     }
     cout<<endl;
 
-    h2->Divide(h1,h0);
+    GetProbability(h0,h1,gr2);
+    for(Int_t i = 0; i < nP; i++)
+    {
+        GetProbability(hh0[i],hh1[i],grProb[i]);
+
+        TF1* fitProb = new TF1("fitProb","1.0-[0]*exp([1]+[2]*x)",0,40e-3);
+        grProb[i]->Fit(fitProb,"R+");
+        grProb[i]->Write();
+    }
 
     h0->Write();
     h1->Write();
-    h2->Write();
+    gr2->Write();
     h3->Write();
     h4->Write();
     h5->Write();
@@ -191,7 +263,46 @@ void AnalysisClass::Loop()
     h9->Write();
     h10->Write();
 
+    for(Int_t i = 0; i < nP; i++)
+    {
+        hh0[i]->Write();
+        hh1[i]->Write();
+        hh6[i]->Write();
+    }
+
     f->Close();
+}
+
+void AnalysisClass::GetProbability(TH1D* h0, TH1D* h1, TGraphErrors* gr)
+{
+    Int_t nBins = 0;
+    if(h0->GetNbinsX() != h1->GetNbinsX())
+    {
+        cout<<endl<<"ERROR:: Different number of bins in X-axis!"<<endl<<endl;
+        assert(0);
+    }
+    else
+    {
+        nBins = h0->GetNbinsX();
+
+        for(Int_t binxi = 1; binxi <= nBins; binxi++)
+        {
+            Double_t xx = h0->GetBinCenter(binxi);
+            Double_t ex = h0->GetBinWidth(1)/TMath::Sqrt(12.0);
+            Double_t v0 = h0->GetBinContent(binxi);
+            Double_t e0 = h0->GetBinError(binxi);
+            Double_t v1 = h1->GetBinContent(binxi);
+            Double_t e1 = h1->GetBinError(binxi);
+            Double_t e2 = TMath::Sqrt(TMath::Power(e1/v0,2) + TMath::Power(v1*e0/(v0*v0),2));
+            Double_t v2 = v1/v0;
+
+            if(v0 != 0)
+            {
+                gr->SetPoint(gr->GetN(),xx,v2);
+                gr->SetPointError(gr->GetN()-1,ex,e2);
+            }
+        }
+    }
 }
 
 
