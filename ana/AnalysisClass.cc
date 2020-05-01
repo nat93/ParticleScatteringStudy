@@ -1,5 +1,7 @@
 #include "AnalysisClass.hh"
+#include <TH1.h>
 #include <TH2.h>
+#include <TH3.h>
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <TVector3.h>
@@ -133,14 +135,16 @@ void AnalysisClass::Loop()
     TH1D* h0 = new TH1D("h0","D0 vs target length",400,0,40e-3);
     TH1D* h1 = new TH1D("h1","D1 vs target length",400,0,40e-3);
     TGraphErrors* gr2 = new TGraphErrors(); gr2->SetName("gr2");
-    TH1D* h3 = new TH1D("h3","#theta_{Det0} vs target length",1000000,-TMath::Pi(),TMath::Pi());
-    TH1D* h4 = new TH1D("h4","#theta_{Det1} vs target length",1000000,-TMath::Pi(),TMath::Pi());
-    TH1D* h5 = new TH1D("h5","#theta_{Scat.} vs target length",1000000,0,TMath::PiOver2());
+    TH1D* h3 = new TH1D("h3","#theta_{Det0}",1000000,-TMath::Pi(),TMath::Pi());
+    TH1D* h4 = new TH1D("h4","#theta_{Det1}",1000000,-TMath::Pi(),TMath::Pi());
+    TH1D* h5 = new TH1D("h5","#theta_{Scat.}",1000000,0,TMath::PiOver2());
     TH2D* h6 = new TH2D("h6","#theta_{Scat.} vs target length",400,0,40e-3,10000,0,TMath::PiOver2());
-    TH1D* h7 = new TH1D("h7","E_{kin,Det0} vs target length",1000000,0,10);
-    TH1D* h8 = new TH1D("h8","E_{kin,Det1} vs target length",1000000,0,10);
-    TH1D* h9 = new TH1D("h9","#DeltaE_{kin} vs target length",1000000,-10,10);
+    TH1D* h7 = new TH1D("h7","E_{kin,Det0}",1000000,0,10);
+    TH1D* h8 = new TH1D("h8","E_{kin,Det1}",1000000,0,10);
+    TH1D* h9 = new TH1D("h9","#DeltaE_{kin}",1000000,-10,10);
     TH2D* h10 = new TH2D("h10","#DeltaE_{kin} vs target length",400,0,40e-3,10000,-10,10);
+    TH2D* h11 = new TH2D("h11","#DeltaE_{kin} vs #theta_{Scat.}",1000,0,TMath::PiOver2(),1000,-10,10);
+    TH3D* h12 = new TH3D("h12","#DeltaE_{kin} vs #theta_{Scat.} vs target length",80,0,40e-3,100,0,TMath::PiOver2(),100,0,4);
 
     TVector3 particleMom0;
     TVector3 particleMom1;
@@ -151,6 +155,8 @@ void AnalysisClass::Loop()
     TH1D* hh0[nP];
     TH1D* hh1[nP];
     TH2D* hh6[nP];
+    TH2D* hh10[nP];
+    TH2D* hh11[nP];
     TGraphErrors* grProb[nP];
     TGraphErrors* grTheta[nP];
 
@@ -188,6 +194,14 @@ void AnalysisClass::Loop()
         grName.Form("hh6_%d",i);
         grTitle.Form("#theta_{Scat.}: P = [%.3f | %.3f] GeV/c",Pmin[i],Pmax[i]);
         hh6[i] = new TH2D(grName.Data(),grTitle.Data(),400,0,40e-3,10000,0,TMath::PiOver2());
+
+        grName.Form("hh10_%d",i);
+        grTitle.Form("#DeltaE_{kin}: P = [%.3f | %.3f] GeV/c",Pmin[i],Pmax[i]);
+        hh10[i] = new TH2D(grName.Data(),grTitle.Data(),400,0,40e-3,10000,-10,10);
+
+        grName.Form("hh11_%d",i);
+        grTitle.Form("#DeltaE_{kin} vs #theta_{Scat.}: P = [%.3f | %.3f] GeV/c",Pmin[i],Pmax[i]);
+        hh11[i] = new TH2D(grName.Data(),grTitle.Data(),1000,0,TMath::PiOver2(),1000,-10,10);
     }
 
     cout<<endl;
@@ -227,6 +241,8 @@ void AnalysisClass::Loop()
                 h8->Fill(Ekin1);
                 h9->Fill(Ekin0-Ekin1);
                 h10->Fill(targetL,Ekin0-Ekin1);
+                h11->Fill(particleMom1.Theta()-particleMom0.Theta(),Ekin0-Ekin1);
+                h12->Fill(targetL,particleMom1.Theta()-particleMom0.Theta(),Ekin0-Ekin1);
 
                 for(Int_t i = 0; i < nP; i++)
                 {
@@ -234,6 +250,8 @@ void AnalysisClass::Loop()
                     {
                         hh1[i]->Fill(targetL);
                         hh6[i]->Fill(targetL,particleMom1.Theta()-particleMom0.Theta());
+                        hh10[i]->Fill(targetL,Ekin0-Ekin1);
+                        hh11[i]->Fill(particleMom1.Theta()-particleMom0.Theta(),Ekin0-Ekin1);
                     }
                 }
             }
@@ -245,9 +263,6 @@ void AnalysisClass::Loop()
     for(Int_t i = 0; i < nP; i++)
     {
         GetProbability(hh0[i],hh1[i],grProb[i]);
-
-        TF1* fitProb = new TF1("fitProb","1.0-[0]*exp([1]+[2]*x)",0,40e-3);
-        grProb[i]->Fit(fitProb,"R+");
         grProb[i]->Write();
     }
 
@@ -262,12 +277,16 @@ void AnalysisClass::Loop()
     h8->Write();
     h9->Write();
     h10->Write();
+    h11->Write();
+    h12->Write();
 
     for(Int_t i = 0; i < nP; i++)
     {
         hh0[i]->Write();
         hh1[i]->Write();
         hh6[i]->Write();
+        hh10[i]->Write();
+        hh11[i]->Write();
     }
 
     f->Close();

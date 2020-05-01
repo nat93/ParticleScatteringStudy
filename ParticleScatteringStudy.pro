@@ -14,6 +14,7 @@ LIBS += -L/Users/andrii/geant4.10/clhep-install/lib -lCLHEP -lCLHEP-2.4.1.3 -lCL
 SOURCES += \
     ana/AnalysisClass.cc \
     ana/ana.cc \
+    ana/plot.C \
     main.cc \
     src/SteppingAction.cc \
     src/StackingMessenger.cc \
