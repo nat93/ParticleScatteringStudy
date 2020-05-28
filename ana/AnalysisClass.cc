@@ -132,77 +132,23 @@ void AnalysisClass::Loop()
     cout<<"--> nEntries = "<<nEntries<<endl;
 
     TFile *f = new TFile(_output_filename.Data(),"RECREATE");
-    TH1D* h0 = new TH1D("h0","D0 vs target length",400,0,40e-3);
-    TH1D* h1 = new TH1D("h1","D1 vs target length",400,0,40e-3);
-    TGraphErrors* gr2 = new TGraphErrors(); gr2->SetName("gr2");
+    TH1D* h0 = new TH1D("h0","D0 vs target length",12,0,60e-3);
+    TH1D* h1 = new TH1D("h1","D1 vs target length",12,0,60e-3);
     TH1D* h3 = new TH1D("h3","#theta_{Det0}",1000000,-TMath::Pi(),TMath::Pi());
     TH1D* h4 = new TH1D("h4","#theta_{Det1}",1000000,-TMath::Pi(),TMath::Pi());
     TH1D* h5 = new TH1D("h5","#theta_{Scat.}",1000000,0,TMath::PiOver2());
-    TH2D* h6 = new TH2D("h6","#theta_{Scat.} vs target length",400,0,40e-3,10000,0,TMath::PiOver2());
+    TH2D* h6 = new TH2D("h6","#theta_{Scat.} vs target length",12,0,60e-3,1000,0,TMath::PiOver2());
     TH1D* h7 = new TH1D("h7","E_{kin,Det0}",1000000,0,10);
     TH1D* h8 = new TH1D("h8","E_{kin,Det1}",1000000,0,10);
     TH1D* h9 = new TH1D("h9","#DeltaE_{kin}",1000000,-10,10);
-    TH2D* h10 = new TH2D("h10","#DeltaE_{kin} vs target length",400,0,40e-3,10000,-10,10);
+    TH2D* h10 = new TH2D("h10","#DeltaE_{kin} vs target length",12,0,60e-3,10000,-10,10);
     TH2D* h11 = new TH2D("h11","#DeltaE_{kin} vs #theta_{Scat.}",1000,0,TMath::PiOver2(),1000,-10,10);
-    TH3D* h12 = new TH3D("h12","#DeltaE_{kin} vs #theta_{Scat.} vs target length",80,0,40e-3,100,0,TMath::PiOver2(),100,0,4);
+    TH3D* h12 = new TH3D("h12","#DeltaE_{kin} vs #theta_{Scat.} vs target length",12,0,60e-3,100,0,TMath::PiOver2(),100,0,10);
+
+    TGraphErrors* grProb = new TGraphErrors(); grProb->SetName("grProb");
 
     TVector3 particleMom0;
     TVector3 particleMom1;
-
-    const Int_t nP = 41;
-    Double_t Pmin[nP];
-    Double_t Pmax[nP];
-    TH1D* hh0[nP];
-    TH1D* hh1[nP];
-    TH2D* hh6[nP];
-    TH2D* hh10[nP];
-    TH2D* hh11[nP];
-    TGraphErrors* grProb[nP];
-    TGraphErrors* grTheta[nP];
-
-    fChain->GetEntry(0);
-    static Double_t nominalMom = (PDG > 0)? /*e-*/7.00729 : /*e+*/4.00000; // [GeV/c]
-
-    for(Int_t i = 0; i < nP; i++)
-    {
-        Double_t deltaP = -0.02 + i*0.001;
-        Pmin[i] = nominalMom*(1.0 + deltaP - 0.001/2.0);
-        Pmax[i] = nominalMom*(1.0 + deltaP + 0.001/2.0);
-
-        TString grTitle, grName;
-
-        grTitle.Form("P = [%.3f | %.3f] GeV/c",Pmin[i],Pmax[i]);
-
-        grName.Form("grProb_%d",i);
-        grProb[i] = new TGraphErrors();
-        grProb[i]->SetName(grName.Data());
-        grProb[i]->SetTitle(grTitle.Data());
-
-        grName.Form("grTheta_%d",i);
-        grTheta[i] = new TGraphErrors();
-        grTheta[i]->SetName(grName.Data());
-        grTheta[i]->SetTitle(grTitle.Data());
-
-        grName.Form("hh0_%d",i);
-        grTitle.Form("D0: P = [%.3f | %.3f] GeV/c",Pmin[i],Pmax[i]);
-        hh0[i] = new TH1D(grName.Data(),grTitle.Data(),400,0,40e-3);
-
-        grName.Form("hh1_%d",i);
-        grTitle.Form("D1: P = [%.3f | %.3f] GeV/c",Pmin[i],Pmax[i]);
-        hh1[i] = new TH1D(grName.Data(),grTitle.Data(),400,0,40e-3);
-
-        grName.Form("hh6_%d",i);
-        grTitle.Form("#theta_{Scat.}: P = [%.3f | %.3f] GeV/c",Pmin[i],Pmax[i]);
-        hh6[i] = new TH2D(grName.Data(),grTitle.Data(),400,0,40e-3,10000,0,TMath::PiOver2());
-
-        grName.Form("hh10_%d",i);
-        grTitle.Form("#DeltaE_{kin}: P = [%.3f | %.3f] GeV/c",Pmin[i],Pmax[i]);
-        hh10[i] = new TH2D(grName.Data(),grTitle.Data(),400,0,40e-3,10000,-10,10);
-
-        grName.Form("hh11_%d",i);
-        grTitle.Form("#DeltaE_{kin} vs #theta_{Scat.}: P = [%.3f | %.3f] GeV/c",Pmin[i],Pmax[i]);
-        hh11[i] = new TH2D(grName.Data(),grTitle.Data(),1000,0,TMath::PiOver2(),1000,-10,10);
-    }
 
     cout<<endl;
     for (Long64_t jentry = 0; jentry < nEntries; jentry++)
@@ -224,14 +170,6 @@ void AnalysisClass::Loop()
             h3->Fill(particleMom0.Theta());
             h7->Fill(Ekin0);
 
-            for(Int_t i = 0; i < nP; i++)
-            {
-                if(particleMom0.Mag() < Pmax[i] && particleMom0.Mag() > Pmin[i])
-                {
-                    hh0[i]->Fill(targetL);
-                }
-            }
-
             if(Det1 == 1)
             {
                 h1->Fill(targetL);
@@ -243,32 +181,16 @@ void AnalysisClass::Loop()
                 h10->Fill(targetL,Ekin0-Ekin1);
                 h11->Fill(particleMom1.Theta()-particleMom0.Theta(),Ekin0-Ekin1);
                 h12->Fill(targetL,particleMom1.Theta()-particleMom0.Theta(),Ekin0-Ekin1);
-
-                for(Int_t i = 0; i < nP; i++)
-                {
-                    if(particleMom0.Mag() < Pmax[i] && particleMom0.Mag() > Pmin[i])
-                    {
-                        hh1[i]->Fill(targetL);
-                        hh6[i]->Fill(targetL,particleMom1.Theta()-particleMom0.Theta());
-                        hh10[i]->Fill(targetL,Ekin0-Ekin1);
-                        hh11[i]->Fill(particleMom1.Theta()-particleMom0.Theta(),Ekin0-Ekin1);
-                    }
-                }
             }
         }
     }
     cout<<endl;
 
-    GetProbability(h0,h1,gr2);
-    for(Int_t i = 0; i < nP; i++)
-    {
-        GetProbability(hh0[i],hh1[i],grProb[i]);
-        grProb[i]->Write();
-    }
+    GetProbability(h0,h1,grProb);
 
     h0->Write();
     h1->Write();
-    gr2->Write();
+    grProb->Write();
     h3->Write();
     h4->Write();
     h5->Write();
@@ -279,15 +201,6 @@ void AnalysisClass::Loop()
     h10->Write();
     h11->Write();
     h12->Write();
-
-    for(Int_t i = 0; i < nP; i++)
-    {
-        hh0[i]->Write();
-        hh1[i]->Write();
-        hh6[i]->Write();
-        hh10[i]->Write();
-        hh11[i]->Write();
-    }
 
     f->Close();
 }

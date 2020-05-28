@@ -15,7 +15,7 @@ chmod a+x exe;
 
 runID=1;
 incr=1;
-nParticles=10000;
+nParticles=1000000;
 
 # LER
 mom=4.000000000; # [GeV/c]
@@ -25,10 +25,11 @@ parType="e+";
 #mom=7.007290000; # [GeV/c]
 #parType="e-";
 
-for length in $(seq 1.0 0.5 30.0)
+for length in $(seq 0.0 5.0 50.0)
 do
-    for deltaP in $(seq -0.02 0.001 0.02)
-    do
+#    for deltaP in $(seq -0.02 0.001 0.02)
+#    do
+        deltaP=0;
         echo "##-----------------------------------------##"                >  ./macFiles/run_${threadID}_${runID}.mac;
         echo "/run/verbose 1"                                               >> ./macFiles/run_${threadID}_${runID}.mac;
         echo "/event/verbose 0"                                             >> ./macFiles/run_${threadID}_${runID}.mac;
@@ -54,6 +55,6 @@ do
         cat ./macFiles/run_${threadID}_${runID}.mac >> log_${threadID}.txt;
         ./exe ./macFiles/run_${threadID}_${runID}.mac >> log_${threadID}.txt;
         runID=$(($runID+$incr));
-    done
+#    done
 done
 

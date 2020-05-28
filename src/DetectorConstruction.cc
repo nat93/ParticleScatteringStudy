@@ -48,21 +48,24 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     G4VPhysicalVolume* world_phys = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.),world_log,"world",0,false,0);
 
     // TARGET
-    G4Box* target_box = new G4Box("target_box",
-                                  _target_width/2,
-                                  _target_height/2,
-                                  _target_length/2);
+    if(_target_length > 0)
+    {
+        G4Box* target_box = new G4Box("target_box",
+                                      _target_width/2,
+                                      _target_height/2,
+                                      _target_length/2);
 
-    runAction->_targetL = target_box->GetZHalfLength()*2.0/m;
-    runAction->_targetW = target_box->GetXHalfLength()*2.0/m;
-    runAction->_targetH = target_box->GetYHalfLength()*2.0/m;
+        runAction->_targetL = target_box->GetZHalfLength()*2.0/m;
+        runAction->_targetW = target_box->GetXHalfLength()*2.0/m;
+        runAction->_targetH = target_box->GetYHalfLength()*2.0/m;
 
-    G4LogicalVolume* target_log = new G4LogicalVolume(target_box,TUNGSTEN,"target_box");
-    new G4PVPlacement(0,G4ThreeVector(Constants::target_pos_x,
-                                      Constants::target_pos_y,
-                                      Constants::target_pos_z),target_log,"target_box",world_log,false,0);
+        G4LogicalVolume* target_log = new G4LogicalVolume(target_box,TUNGSTEN,"target_box");
+        new G4PVPlacement(0,G4ThreeVector(Constants::target_pos_x,
+                                          Constants::target_pos_y,
+                                          Constants::target_pos_z),target_log,"target_box",world_log,false,0);
 
-    target_log->SetVisAttributes(G4VisAttributes(G4Color::Magenta()));
+        target_log->SetVisAttributes(G4VisAttributes(G4Color::Magenta()));
+    }
 
     // PHANTOM SENSITIVE PLANE
     G4Box* phantom_box = new G4Box("phantom",
