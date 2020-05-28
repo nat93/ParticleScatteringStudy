@@ -50,6 +50,7 @@ int plot()
     FILE * pFile = fopen(outputFileName.Data(),"w");
     Float_t _l, _t, _e, _c, _p;
     cout<<endl;
+    fprintf (pFile, "(* Length dTheta dE Coutns Prob*)\n");
     fprintf (pFile, "{\n");
     Long64_t nDataLines = 0;
     cout<<"Read a 3D histogram ..."<<endl;
@@ -66,6 +67,9 @@ int plot()
 
         _l = h12->GetXaxis()->GetBinCenter(ix);
         _p = grProb->Eval(_l);
+
+        fprintf (pFile, "   \"L%d\"->{\n",ix);
+
         for(Int_t iy = 1; iy <= h12->GetNbinsY(); iy++)
         {
             _t = h12->GetYaxis()->GetBinCenter(iy);
@@ -80,10 +84,21 @@ int plot()
                 if(_p > 1){_p = 1;}
                 if(_c < 0){_c = 0;}
 
-                fprintf (pFile, "   { %.6f , %.6f , %.6f , %.6f , %.6f } ,\n",_l,_t,_e,_c,_p);
+                fprintf (pFile, "            { %.6f , %.6f , %.6f , %.6f , %.6f }",_l,_t,_e,_c,_p);
+                if(iy == h12->GetNbinsY() && iz == h12->GetNbinsZ())
+                {
+                    fprintf (pFile, "\n");
+                }
+                else
+                {
+                    fprintf (pFile, ",\n");
+                }
                 nDataLines++;
             }
         }
+
+        fprintf (pFile, "   },\n");
+
         delete h12proj;
 
         printf("\r--> Progress: %d/%d (l = %.1f [mm])",ix,h12->GetNbinsX(),_l*1e3);
