@@ -29,7 +29,7 @@ int plot()
     time_t start_time, stop_time;
     start_time = time(NULL);
 
-    TString filename = "output_ler_cu.root_ana.root";
+    TString filename = "output_her_cu.root_ana.root";
     cout<<"--> Input file: "<<filename<<endl;
 
     TFile *file = TFile::Open(filename.Data());
@@ -170,7 +170,7 @@ int plot()
     gPad->SetGrid();
     h14->Draw("colz");
     h14->RebinX(5);
-    h14->GetYaxis()->SetRangeUser(-0.1,4.1);
+    h14->GetYaxis()->SetRangeUser(-0.1,7.1);
     h14->GetXaxis()->SetTitle("Target Length [m]");
     h14->GetYaxis()->SetTitle("#DeltaP [GeV/c]");
     h14->GetXaxis()->CenterTitle();
@@ -181,7 +181,7 @@ int plot()
     c2->cd(3);
     gPad->SetGrid();
     h15->Draw("colz");
-    h15->GetYaxis()->SetRangeUser(-0.1,4.1);
+    h15->GetYaxis()->SetRangeUser(-0.1,7.1);
     h15->GetXaxis()->SetTitle("#theta_{Scat.} [rad]");
     h15->GetYaxis()->SetTitle("#DeltaP [GeV/c]");
     h15->GetXaxis()->CenterTitle();

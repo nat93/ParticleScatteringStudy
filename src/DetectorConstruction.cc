@@ -36,8 +36,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 {
     G4NistManager* nistManager = G4NistManager::Instance();
 
-//    G4Material* target_material = nistManager->FindOrBuildMaterial("G4_W");
-    G4Material* target_material = nistManager->FindOrBuildMaterial("G4_Cu");
+    G4Material* target_material = nistManager->FindOrBuildMaterial("G4_W");
+//    G4Material* target_material = nistManager->FindOrBuildMaterial("G4_Cu");
     G4Material* VACUUM      = nistManager->FindOrBuildMaterial("G4_Galactic");
 
     // WORLD

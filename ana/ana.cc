@@ -15,7 +15,7 @@ int main()
     time_t start_time, stop_time;
     start_time = time(NULL);
 
-    TString filename = "output_ler_cu.root";
+    TString filename = "output_her_cu.root";
     AnalysisClass* _ana = new AnalysisClass();
     _ana->SetInputFileName(filename);
     _ana->InitTree("tree");

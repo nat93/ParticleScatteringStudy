@@ -25,8 +25,8 @@ nParticles=1000000;
 mom=7.007290000; # [GeV/c]
 parType="e-";
 
-#for length in $(seq 0.0 1.0 50.0)  # for W
-for length in $(seq 0.0 4.0 200.0) # for Cu
+#for length in $(seq 0.0 4.0 200.0) # for Cu
+for length in $(seq 0.0 1.0 50.0)  # for W
 do
 #    for deltaP in $(seq -0.02 0.001 0.02)
 #    do
