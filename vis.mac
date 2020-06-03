@@ -3,14 +3,14 @@
 /event/verbose 0
 /tracking/verbose 0
 ##-----------------------------------------##
-/target/length 25.0 mm
-/target/width 80.0 mm
-/target/height 80.0 mm
+/target/length 50.0 mm
+/target/width 500.0 mm
+/target/height 500.0 mm
 /output/filename ../output/output.root
 /stack/killsecondaries 1
 /beam/deltaP 0.01
-/beam/P 4.0 GeV
-/beam/pName e+
+/beam/P 7.0 GeV
+/beam/pName e-
 /beam/PdirX 0.0
 /beam/PdirY 0.0
 /beam/PdirZ 1.0
@@ -32,5 +32,5 @@
 /vis/modeling/trajectories/drawByCharge-0/default/setAuxPtsSize 5
 /vis/modeling/trajectories/drawByCharge-0/default/setTimeSliceInterval 0.1 ns
 ##-----------------------------------------##
-/run/beamOn 30
+/run/beamOn 100
 ##-----------------------------------------##

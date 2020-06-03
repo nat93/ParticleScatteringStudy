@@ -132,18 +132,21 @@ void AnalysisClass::Loop()
     cout<<"--> nEntries = "<<nEntries<<endl;
 
     TFile *f = new TFile(_output_filename.Data(),"RECREATE");
-    TH1D* h0 = new TH1D("h0","D0 vs target length",12,0,60e-3);
-    TH1D* h1 = new TH1D("h1","D1 vs target length",12,0,60e-3);
+    TH1D* h0 = new TH1D("h0","D0 vs target length",60,0,240e-3);
+    TH1D* h1 = new TH1D("h1","D1 vs target length",60,0,240e-3);
     TH1D* h3 = new TH1D("h3","#theta_{Det0}",1000000,-TMath::Pi(),TMath::Pi());
     TH1D* h4 = new TH1D("h4","#theta_{Det1}",1000000,-TMath::Pi(),TMath::Pi());
     TH1D* h5 = new TH1D("h5","#theta_{Scat.}",1000000,0,TMath::PiOver2());
-    TH2D* h6 = new TH2D("h6","#theta_{Scat.} vs target length",12,0,60e-3,1000,0,TMath::PiOver2());
+    TH2D* h6 = new TH2D("h6","#theta_{Scat.} vs target length",60,0,240e-3,1000,0,TMath::PiOver2());
     TH1D* h7 = new TH1D("h7","E_{kin,Det0}",1000000,0,10);
     TH1D* h8 = new TH1D("h8","E_{kin,Det1}",1000000,0,10);
     TH1D* h9 = new TH1D("h9","#DeltaE_{kin}",1000000,-10,10);
-    TH2D* h10 = new TH2D("h10","#DeltaE_{kin} vs target length",12,0,60e-3,10000,-10,10);
+    TH2D* h10 = new TH2D("h10","#DeltaE_{kin} vs target length",60,0,240e-3,10000,-10,10);
     TH2D* h11 = new TH2D("h11","#DeltaE_{kin} vs #theta_{Scat.}",1000,0,TMath::PiOver2(),1000,-10,10);
-    TH3D* h12 = new TH3D("h12","#DeltaE_{kin} vs #theta_{Scat.} vs target length",12,0,60e-3,100,0,TMath::PiOver2(),100,0,10);
+    TH3D* h12 = new TH3D("h12","#DeltaMom vs #theta_{Scat.} vs target length",60,0,240e-3,100,0,TMath::PiOver2(),100,0,10);
+    TH1D* h13 = new TH1D("h13","#DeltaP",1000000,-10,10);
+    TH2D* h14 = new TH2D("h14","#DeltaP vs target length",60,0,240e-3,10000,-10,10);
+    TH2D* h15 = new TH2D("h15","#DeltaP vs #theta_{Scat.}",1000,0,TMath::PiOver2(),1000,-10,10);
 
     TGraphErrors* grProb = new TGraphErrors(); grProb->SetName("grProb");
 
@@ -180,7 +183,10 @@ void AnalysisClass::Loop()
                 h9->Fill(Ekin0-Ekin1);
                 h10->Fill(targetL,Ekin0-Ekin1);
                 h11->Fill(particleMom1.Theta()-particleMom0.Theta(),Ekin0-Ekin1);
-                h12->Fill(targetL,particleMom1.Theta()-particleMom0.Theta(),Ekin0-Ekin1);
+                h12->Fill(targetL,particleMom1.Theta()-particleMom0.Theta(),particleMom0.Mag()-particleMom1.Mag());
+                h13->Fill(particleMom0.Mag()-particleMom1.Mag());
+                h14->Fill(targetL,particleMom0.Mag()-particleMom1.Mag());
+                h15->Fill(particleMom1.Theta()-particleMom0.Theta(),particleMom0.Mag()-particleMom1.Mag());
             }
         }
     }
@@ -201,6 +207,9 @@ void AnalysisClass::Loop()
     h10->Write();
     h11->Write();
     h12->Write();
+    h13->Write();
+    h14->Write();
+    h15->Write();
 
     f->Close();
 }

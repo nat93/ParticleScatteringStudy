@@ -9,8 +9,8 @@
 /output/filename ../output/output.root
 /stack/killsecondaries 1
 /beam/deltaP 0.01
-/beam/P 4.0 GeV
-/beam/pName e+
+/beam/P 7.0 GeV
+/beam/pName e-
 /beam/PdirX 0.0
 /beam/PdirY 0.0
 /beam/PdirZ 1.0

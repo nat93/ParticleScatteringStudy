@@ -18,14 +18,15 @@ incr=1;
 nParticles=1000000;
 
 # LER
-mom=4.000000000; # [GeV/c]
-parType="e+";
+#mom=4.000000000; # [GeV/c]
+#parType="e+";
 
 # HER
-#mom=7.007290000; # [GeV/c]
-#parType="e-";
+mom=7.007290000; # [GeV/c]
+parType="e-";
 
-for length in $(seq 0.0 5.0 50.0)
+#for length in $(seq 0.0 1.0 50.0)  # for W
+for length in $(seq 0.0 4.0 200.0) # for Cu
 do
 #    for deltaP in $(seq -0.02 0.001 0.02)
 #    do
@@ -36,8 +37,8 @@ do
         echo "/tracking/verbose 0"                                          >> ./macFiles/run_${threadID}_${runID}.mac;
         echo "##-----------------------------------------##"                >> ./macFiles/run_${threadID}_${runID}.mac;
         echo "/target/length ${length} mm"                                  >> ./macFiles/run_${threadID}_${runID}.mac;
-        echo "/target/width 80.0 mm"                                        >> ./macFiles/run_${threadID}_${runID}.mac;
-        echo "/target/height 80.0 mm"                                       >> ./macFiles/run_${threadID}_${runID}.mac;
+        echo "/target/width 500.0 mm"                                       >> ./macFiles/run_${threadID}_${runID}.mac;
+        echo "/target/height 500.0 mm"                                      >> ./macFiles/run_${threadID}_${runID}.mac;
         echo "/output/filename ../output/output_${threadID}_${runID}.root"  >> ./macFiles/run_${threadID}_${runID}.mac;
         echo "/stack/killsecondaries 1"                                     >> ./macFiles/run_${threadID}_${runID}.mac;
         echo "/beam/deltaP ${deltaP}"                                       >> ./macFiles/run_${threadID}_${runID}.mac;

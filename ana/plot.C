@@ -29,15 +29,15 @@ int plot()
     time_t start_time, stop_time;
     start_time = time(NULL);
 
-    TString filename = "output_all.root_ana.root";
+    TString filename = "output_ler_cu.root_ana.root";
     cout<<"--> Input file: "<<filename<<endl;
 
     TFile *file = TFile::Open(filename.Data());
 
     TGraphErrors* grProb = (TGraphErrors*)file->Get("grProb");
     TH2D* h6 = (TH2D*)file->Get("h6");
-    TH2D* h10 = (TH2D*)file->Get("h10");
-    TH2D* h11 = (TH2D*)file->Get("h11");
+    TH2D* h14 = (TH2D*)file->Get("h14");
+    TH2D* h15 = (TH2D*)file->Get("h15");
     TH3D* h12 = (TH3D*)file->Get("h12");
 
     TH3D* hh12 = new TH3D("hh12",h12->GetTitle(),
@@ -46,11 +46,11 @@ int plot()
                              h12->GetNbinsZ(),h12->GetZaxis()->GetXmin(),h12->GetZaxis()->GetXmax());
     //====================================//
     // Prepare a sample for SAD++
-    TString outputFileName = "G4SAMPLE_LENGTH_ANGLE_ENERGY_C_PROB.dat";
+    TString outputFileName = filename + "_g4.dat";
     FILE * pFile = fopen(outputFileName.Data(),"w");
-    Float_t _l, _t, _e, _c, _p;
+    Float_t _l, _t, _m, _c, _p;
     cout<<endl;
-    fprintf (pFile, "(* Length dTheta dE Coutns Prob*)\n");
+    fprintf (pFile, "(* Length dTheta dP Counts Prob *)\n");
     fprintf (pFile, "{\n");
     Long64_t nDataLines = 0;
     cout<<"Read a 3D histogram ..."<<endl;
@@ -75,7 +75,7 @@ int plot()
             _t = h12->GetYaxis()->GetBinCenter(iy);
             for(Int_t iz = 1; iz <= h12->GetNbinsZ(); iz++)
             {
-                _e = h12->GetZaxis()->GetBinCenter(iz);
+                _m = h12->GetZaxis()->GetBinCenter(iz);
                 _c = h12proj->GetBinContent(iy,iz);
 
                 hh12->SetBinContent(ix,iy,iz,_c);
@@ -84,7 +84,7 @@ int plot()
                 if(_p > 1){_p = 1;}
                 if(_c < 0){_c = 0;}
 
-                fprintf (pFile, "            { %.6f , %.6f , %.6f , %.6f , %.6f }",_l,_t,_e,_c,_p);
+                fprintf (pFile, "            { %.6f , %.6f , %.6f , %.6f , %.6f }",_l,_t,_m,_c,_p);
                 if(iy == h12->GetNbinsY() && iz == h12->GetNbinsZ())
                 {
                     fprintf (pFile, "\n");
@@ -117,7 +117,7 @@ int plot()
     gPad->SetGrid();
     h12->GetXaxis()->SetTitle("Target Length [m]");
     h12->GetYaxis()->SetTitle("#theta_{Scat.} [rad]");
-    h12->GetZaxis()->SetTitle("#DeltaE_{kin.} [GeV]");
+    h12->GetZaxis()->SetTitle("#DeltaP [GeV/c]");
     h12->GetXaxis()->CenterTitle();
     h12->GetYaxis()->CenterTitle();
     h12->GetZaxis()->CenterTitle();
@@ -129,7 +129,7 @@ int plot()
     gPad->SetGrid();
     hh12->GetXaxis()->SetTitle("Target Length [m]");
     hh12->GetYaxis()->SetTitle("#theta_{Scat.} [rad]");
-    hh12->GetZaxis()->SetTitle("#DeltaE_{kin.} [GeV]");
+    hh12->GetZaxis()->SetTitle("#DeltaP [GeV/c]");
     hh12->GetXaxis()->CenterTitle();
     hh12->GetYaxis()->CenterTitle();
     hh12->GetZaxis()->CenterTitle();
@@ -157,35 +157,37 @@ int plot()
     c2->Divide(3,2);
     c2->cd(1);
     gPad->SetGrid();
-//    h6->Rebin2D(10);
     h6->Draw("colz");
+    h6->RebinX(5);
     h6->GetXaxis()->SetTitle("Target Length [m]");
     h6->GetYaxis()->SetTitle("#theta_{Scat.} [rad]");
     h6->GetXaxis()->CenterTitle();
     h6->GetYaxis()->CenterTitle();
     h6->GetYaxis()->SetTitleOffset(1.2);
+    gPad->SetLogz();
 
     c2->cd(2);
     gPad->SetGrid();
-//    h10->Rebin2D(10);
-    h10->Draw("colz");
-    h10->GetYaxis()->SetRangeUser(-0.1,4.1);
-    h10->GetXaxis()->SetTitle("Target Length [m]");
-    h10->GetYaxis()->SetTitle("#DeltaE_{kin.} [GeV]");
-    h10->GetXaxis()->CenterTitle();
-    h10->GetYaxis()->CenterTitle();
-    h10->GetYaxis()->SetTitleOffset(1.2);
+    h14->Draw("colz");
+    h14->RebinX(5);
+    h14->GetYaxis()->SetRangeUser(-0.1,4.1);
+    h14->GetXaxis()->SetTitle("Target Length [m]");
+    h14->GetYaxis()->SetTitle("#DeltaP [GeV/c]");
+    h14->GetXaxis()->CenterTitle();
+    h14->GetYaxis()->CenterTitle();
+    h14->GetYaxis()->SetTitleOffset(1.2);
+    gPad->SetLogz();
 
     c2->cd(3);
     gPad->SetGrid();
-//    h11->Rebin2D(10);
-    h11->Draw("colz");
-    h11->GetYaxis()->SetRangeUser(-0.1,4.1);
-    h11->GetXaxis()->SetTitle("#theta_{Scat.} [rad]");
-    h11->GetYaxis()->SetTitle("#DeltaE_{kin.} [GeV]");
-    h11->GetXaxis()->CenterTitle();
-    h11->GetYaxis()->CenterTitle();
-    h11->GetYaxis()->SetTitleOffset(1.2);
+    h15->Draw("colz");
+    h15->GetYaxis()->SetRangeUser(-0.1,4.1);
+    h15->GetXaxis()->SetTitle("#theta_{Scat.} [rad]");
+    h15->GetYaxis()->SetTitle("#DeltaP [GeV/c]");
+    h15->GetXaxis()->CenterTitle();
+    h15->GetYaxis()->CenterTitle();
+    h15->GetYaxis()->SetTitleOffset(1.2);
+    gPad->SetLogz();
 
     c2->cd(4);
     gPad->SetGrid();
@@ -241,39 +243,39 @@ int plot()
 
     TLegend* leg3 = new TLegend(0.3,0.55,0.6,0.85);
 
-    for(Int_t binxi = 1; binxi <= h10->GetNbinsX(); binxi++)
+    for(Int_t binxi = 1; binxi <= h14->GetNbinsX(); binxi++)
     {
         TString hName;
         hName.Form("projYY_%d",binxi);
-        TH1D* h10_ProjY = h10->ProjectionY(hName.Data(),binxi,binxi);
-        h10_ProjY->GetXaxis()->SetRange(h10_ProjY->GetXaxis()->FindBin(minEkin),h10_ProjY->GetXaxis()->FindBin(maxEkin));
-        h10_ProjY->SetMinimum(1);
-        if(h10_ProjY->Integral() <= 0) continue;
+        TH1D* h14_ProjY = h14->ProjectionY(hName.Data(),binxi,binxi);
+        h14_ProjY->GetXaxis()->SetRange(h14_ProjY->GetXaxis()->FindBin(minEkin),h14_ProjY->GetXaxis()->FindBin(maxEkin));
+        h14_ProjY->SetMinimum(1);
+        if(h14_ProjY->Integral() <= 0) continue;
         if(nHist >= 4)break;
 
-        h10_ProjY->SetMarkerStyle(20+nHist);
-        h10_ProjY->SetMarkerSize(0.5);
-        h10_ProjY->SetMarkerColor(1+nHist);
+        h14_ProjY->SetMarkerStyle(20+nHist);
+        h14_ProjY->SetMarkerSize(0.5);
+        h14_ProjY->SetMarkerColor(1+nHist);
 
         if(firstPlot)
         {
-            h10_ProjY->Draw("HIST & E1");
+            h14_ProjY->Draw("HIST & E1");
             firstPlot = false;
         }
         else
         {
-            h10_ProjY->Draw("SAME & HIST & E1");
+            h14_ProjY->Draw("SAME & HIST & E1");
         }
 
         TString legStr;
-        legStr.Form("Sim: \t L = %.1f [mm]",h10->GetXaxis()->GetBinCenter(binxi)*1e3);
-        leg3->AddEntry(h10_ProjY,legStr.Data(),"lpe");
+        legStr.Form("Sim: \t L = %.1f [mm]",h14->GetXaxis()->GetBinCenter(binxi)*1e3);
+        leg3->AddEntry(h14_ProjY,legStr.Data(),"lpe");
 
         nHist++;
     }
     leg3->Draw();
     gPad->SetLogy();
-    cout<<"--> nHist (h10) \t = "<<nHist<<endl;
+    cout<<"--> nHist (h14) \t = "<<nHist<<endl;
 
     c2->cd(6);
     gPad->SetGrid();
@@ -282,37 +284,37 @@ int plot()
 
     TLegend* leg4 = new TLegend(0.3,0.55,0.6,0.85);
 
-    for(Int_t binxi = 1; binxi <= h11->GetNbinsX(); binxi++)
+    for(Int_t binxi = 1; binxi <= h15->GetNbinsX(); binxi++)
     {
         TString hName;
         hName.Form("projYYY_%d",binxi);
-        TH1D* h11_ProjY = h11->ProjectionY(hName.Data(),binxi,binxi);
-        if(h11_ProjY->Integral() <= 0) continue;
+        TH1D* h15_ProjY = h15->ProjectionY(hName.Data(),binxi,binxi);
+        if(h15_ProjY->Integral() <= 0) continue;
         if(nHist >= 4)break;
 
-        h11_ProjY->SetMarkerStyle(20+nHist);
-        h11_ProjY->SetMarkerSize(0.5);
-        h11_ProjY->SetMarkerColor(1+nHist);
+        h15_ProjY->SetMarkerStyle(20+nHist);
+        h15_ProjY->SetMarkerSize(0.5);
+        h15_ProjY->SetMarkerColor(1+nHist);
 
         if(firstPlot)
         {
-            h11_ProjY->Draw("HIST & E1");
+            h15_ProjY->Draw("HIST & E1");
             firstPlot = false;
         }
         else
         {
-            h11_ProjY->Draw("SAME & HIST & E1");
+            h15_ProjY->Draw("SAME & HIST & E1");
         }
 
         TString legStr;
-        legStr.Form("Sim: \t #theta_{Scat.} = %.1f [mrad]",h11->GetXaxis()->GetBinCenter(binxi)*1e3);
-        leg4->AddEntry(h11_ProjY,legStr.Data(),"lpe");
+        legStr.Form("Sim: \t #theta_{Scat.} = %.1f [mrad]",h15->GetXaxis()->GetBinCenter(binxi)*1e3);
+        leg4->AddEntry(h15_ProjY,legStr.Data(),"lpe");
 
         nHist++;
     }
     leg4->Draw();
     gPad->SetLogy();
-    cout<<"--> nHist (h11) \t = "<<nHist<<endl;
+    cout<<"--> nHist (h15) \t = "<<nHist<<endl;
 
     //=======================================================================================//
 

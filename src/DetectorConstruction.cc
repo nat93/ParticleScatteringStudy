@@ -36,7 +36,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 {
     G4NistManager* nistManager = G4NistManager::Instance();
 
-    G4Material* TUNGSTEN	= nistManager->FindOrBuildMaterial("G4_W");
+//    G4Material* target_material = nistManager->FindOrBuildMaterial("G4_W");
+    G4Material* target_material = nistManager->FindOrBuildMaterial("G4_Cu");
     G4Material* VACUUM      = nistManager->FindOrBuildMaterial("G4_Galactic");
 
     // WORLD
@@ -59,7 +60,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
         runAction->_targetW = target_box->GetXHalfLength()*2.0/m;
         runAction->_targetH = target_box->GetYHalfLength()*2.0/m;
 
-        G4LogicalVolume* target_log = new G4LogicalVolume(target_box,TUNGSTEN,"target_box");
+        G4LogicalVolume* target_log = new G4LogicalVolume(target_box,target_material,"target_box");
         new G4PVPlacement(0,G4ThreeVector(Constants::target_pos_x,
                                           Constants::target_pos_y,
                                           Constants::target_pos_z),target_log,"target_box",world_log,false,0);
