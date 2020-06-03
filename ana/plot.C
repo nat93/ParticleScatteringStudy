@@ -29,7 +29,7 @@ int plot()
     time_t start_time, stop_time;
     start_time = time(NULL);
 
-    TString filename = "output_her_cu.root_ana.root";
+    TString filename = "output_her_w.root_ana.root";
     cout<<"--> Input file: "<<filename<<endl;
 
     TFile *file = TFile::Open(filename.Data());
