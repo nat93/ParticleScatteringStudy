@@ -29,7 +29,7 @@ int plot()
     time_t start_time, stop_time;
     start_time = time(NULL);
 
-    TString filename = "output_her_w.root_ana.root";
+    TString filename = "output_her_ta.root_ana.root";
     cout<<"--> Input file: "<<filename<<endl;
 
     TFile *file = TFile::Open(filename.Data());
@@ -317,7 +317,7 @@ int plot()
     cout<<"--> nHist (h15) \t = "<<nHist<<endl;
 
     //=======================================================================================//
-
+/**/
     stop_time = time(NULL);
     cout<<"--> Running time is : "<<stop_time - start_time<<" [sec]"<<endl;
 
