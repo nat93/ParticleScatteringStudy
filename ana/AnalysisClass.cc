@@ -6,6 +6,7 @@
 #include <TCanvas.h>
 #include <TVector3.h>
 #include <TF1.h>
+#include <THnSparse.h>
 
 #include <ctime>
 #include <iostream>
@@ -132,21 +133,51 @@ void AnalysisClass::Loop()
     cout<<"--> nEntries = "<<nEntries<<endl;
 
     TFile *f = new TFile(_output_filename.Data(),"RECREATE");
-    TH1D* h0 = new TH1D("h0","D0 vs target length",60,0,60e-3);
-    TH1D* h1 = new TH1D("h1","D1 vs target length",60,0,60e-3);
-    TH1D* h3 = new TH1D("h3","#theta_{Det0}",1000000,-TMath::Pi(),TMath::Pi());
-    TH1D* h4 = new TH1D("h4","#theta_{Det1}",1000000,-TMath::Pi(),TMath::Pi());
-    TH1D* h5 = new TH1D("h5","#theta_{Scat.}",1000000,0,TMath::PiOver2());
-    TH2D* h6 = new TH2D("h6","#theta_{Scat.} vs target length",60,0,60e-3,1000,0,TMath::PiOver2());
-    TH1D* h7 = new TH1D("h7","E_{kin,Det0}",1000000,0,10);
-    TH1D* h8 = new TH1D("h8","E_{kin,Det1}",1000000,0,10);
-    TH1D* h9 = new TH1D("h9","#DeltaE_{kin}",1000000,-10,10);
-    TH2D* h10 = new TH2D("h10","#DeltaE_{kin} vs target length",60,0,60e-3,10000,-10,10);
-    TH2D* h11 = new TH2D("h11","#DeltaE_{kin} vs #theta_{Scat.}",1000,0,TMath::PiOver2(),1000,-10,10);
-    TH3D* h12 = new TH3D("h12","#DeltaMom vs #theta_{Scat.} vs target length",60,0,60e-3,100,0,TMath::PiOver2(),100,0,10);
-    TH1D* h13 = new TH1D("h13","#DeltaP",1000000,-10,10);
-    TH2D* h14 = new TH2D("h14","#DeltaP vs target length",60,0,60e-3,10000,-10,10);
-    TH2D* h15 = new TH2D("h15","#DeltaP vs #theta_{Scat.}",1000,0,TMath::PiOver2(),1000,-10,10);
+    f->cd();
+
+    //----------------------------------------------- SETTINGS ---------------------------------------------//
+    //______________________________________________________________________________________________________//
+    // check with plot.cc
+    const Int_t dim = 3;
+    Double_t xx[dim];
+    //======== LER W ========//
+//    Int_t bins[dim]       = {2*60/1, 1600000, 80000};
+//    Double_t xmin[dim]    = {0.0, 0.0, 0.0};
+//    Double_t xmax[dim]    = {60e-3, TMath::PiOver2(), 8.0};
+    //======== LER Ta ========//
+//    Int_t bins[dim]       = {2*60/1, 1600000, 80000};
+//    Double_t xmin[dim]    = {0.0, 0.0, 0.0};
+//    Double_t xmax[dim]    = {60e-3, TMath::PiOver2(), 8.0};
+    //======== LER Cu ========//
+//    Int_t bins[dim]       = {2*220/4, 1600000, 80000};
+//    Double_t xmin[dim]    = {0.0, 0.0, 0.0};
+//    Double_t xmax[dim]    = {220e-3, TMath::PiOver2(), 8.0};
+    //======== LER C ========//
+//    Int_t bins[dim]       = {2*140/4, 1600000, 80000};
+//    Double_t xmin[dim]    = {0.0, 0.0, 0.0};
+//    Double_t xmax[dim]    = {140e-3, TMath::PiOver2(), 8.0};
+    //======== HER W ========//
+//    Int_t bins[dim]       = {2*60/1, 1600000, 80000};
+//    Double_t xmin[dim]    = {0.0, 0.0, 0.0};
+//    Double_t xmax[dim]    = {60e-3, TMath::PiOver2(), 8.0};
+    //======== HER Ta ========//
+//    Int_t bins[dim]       = {2*60/1, 1600000, 80000};
+//    Double_t xmin[dim]    = {0.0, 0.0, 0.0};
+//    Double_t xmax[dim]    = {60e-3, TMath::PiOver2(), 8.0};
+    //======== HER Cu ========//
+//    Int_t bins[dim]       = {2*220/4, 1600000, 80000};
+//    Double_t xmin[dim]    = {0.0, 0.0, 0.0};
+//    Double_t xmax[dim]    = {220e-3, TMath::PiOver2(), 8.0};
+    //======== HER C ========//
+    Int_t bins[dim]       = {2*140/4, 1600000, 80000};
+    Double_t xmin[dim]    = {0.0, 0.0, 0.0};
+    Double_t xmax[dim]    = {140e-3, TMath::PiOver2(), 8.0};
+    //
+    THnSparseF* h12 = new THnSparseF("h12","#DeltaMom vs #theta_{Scat.} vs target length",dim,bins,xmin,xmax);
+    //______________________________________________________________________________________________________//
+
+    TH1D* h0 = new TH1D("h0","D0 vs target length",bins[0],xmin[0],xmax[0]);
+    TH1D* h1 = new TH1D("h1","D1 vs target length",bins[0],xmin[0],xmax[0]);
 
     TGraphErrors* grProb = new TGraphErrors(); grProb->SetName("grProb");
 
@@ -156,13 +187,13 @@ void AnalysisClass::Loop()
     cout<<endl;
     for (Long64_t jentry = 0; jentry < nEntries; jentry++)
     {
+        fChain->GetEntry(jentry);
+
         if(jentry%1000 == 0)
         {
-            printf("\r--> Progress: %.1f %%",100.0*jentry/nEntries);
+            printf("\r--> Progress: %.3f [%%] | targetL = %.3f [mm] ",100.0*jentry/nEntries,targetL*1000);
             fflush(stdout);
         }
-
-        fChain->GetEntry(jentry);
 
         particleMom0.SetXYZ(MomX0,MomY0,MomZ0);
         particleMom1.SetXYZ(MomX1,MomY1,MomZ1);
@@ -170,23 +201,12 @@ void AnalysisClass::Loop()
         if(Det0 == 1)
         {
             h0->Fill(targetL);
-            h3->Fill(particleMom0.Theta());
-            h7->Fill(Ekin0);
 
             if(Det1 == 1)
             {
                 h1->Fill(targetL);
-                h4->Fill(particleMom1.Theta());
-                h5->Fill(particleMom1.Theta()-particleMom0.Theta());
-                h6->Fill(targetL,particleMom1.Theta()-particleMom0.Theta());
-                h8->Fill(Ekin1);
-                h9->Fill(Ekin0-Ekin1);
-                h10->Fill(targetL,Ekin0-Ekin1);
-                h11->Fill(particleMom1.Theta()-particleMom0.Theta(),Ekin0-Ekin1);
-                h12->Fill(targetL,particleMom1.Theta()-particleMom0.Theta(),particleMom0.Mag()-particleMom1.Mag());
-                h13->Fill(particleMom0.Mag()-particleMom1.Mag());
-                h14->Fill(targetL,particleMom0.Mag()-particleMom1.Mag());
-                h15->Fill(particleMom1.Theta()-particleMom0.Theta(),particleMom0.Mag()-particleMom1.Mag());
+                xx[0] = targetL; xx[1] = particleMom1.Theta()-particleMom0.Theta(); xx[2] = particleMom0.Mag()-particleMom1.Mag();
+                h12->Fill(xx);
             }
         }
     }
@@ -197,19 +217,7 @@ void AnalysisClass::Loop()
     h0->Write();
     h1->Write();
     grProb->Write();
-    h3->Write();
-    h4->Write();
-    h5->Write();
-    h6->Write();
-    h7->Write();
-    h8->Write();
-    h9->Write();
-    h10->Write();
-    h11->Write();
     h12->Write();
-    h13->Write();
-    h14->Write();
-    h15->Write();
 
     f->Close();
 }
@@ -245,16 +253,3 @@ void AnalysisClass::GetProbability(TH1D* h0, TH1D* h1, TGraphErrors* gr)
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

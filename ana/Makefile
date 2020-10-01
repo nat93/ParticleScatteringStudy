@@ -25,7 +25,7 @@ OUTLIB	      = ./obj/
 
 #----------------------------------------------------#
 
-all: ana
+all: ana plot
 
 ana: ana.cc obj/AnalysisClass.o
 	$(CXX) $(CXXFLAGS) -o ana $(OUTLIB)/*.o $(GLIBS) $<
@@ -36,5 +36,6 @@ obj/AnalysisClass.o: AnalysisClass.cc AnalysisClass.hh
 clean:
 	rm -f *~
 	rm -f ana
+	rm -f plot
 	rm -f $(OUTLIB)*.o
 	rm -rf *.dSYM

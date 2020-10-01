@@ -7,6 +7,8 @@ echo "WELLCOME, GREAT SCIENTIST!"
 echo ""
 echo "I'm BiSiCo (Big Simulation Code). I was created by Andrii. My goal is to make your life simpler."
 echo ""
+date;
+echo ""
 
 g4conf; g4cmake; make -j4;
 
@@ -36,5 +38,6 @@ echo "Choose an item and write in the terminal again: 'screen -r SESSION_NAME'. 
 echo ""
 echo "Enjoy your time. I will do everything automatically. Just don't forget about me :)";
 echo ""
-
+date;
+echo "";
 # ls -lrt output_*.root | awk '{ print $9 }' > mergeFiles.bash
